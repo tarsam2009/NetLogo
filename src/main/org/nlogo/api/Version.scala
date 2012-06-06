@@ -32,22 +32,6 @@ object Version {
         false
     }
 
-  // don't use the generator in the applet because it requires CustomClass loading which is not
-  // allowed in the applet.
-  def useGenerator =
-    try 
-      !java.lang.Boolean.getBoolean("org.nlogo.noGenerator") && {
-        Class.forName("org.nlogo.generator.Generator");
-        true
-      }
-    catch {
-      case _: ClassNotFoundException =>
-        false
-      // can't check arbitrary properties from applets... - ST 10/4/04, 1/31/05
-      case _: java.security.AccessControlException =>
-        false
-    }
-
   def knownVersion(version: String) =
     knownVersions.exists(removeRev(version.trim).startsWith)
 

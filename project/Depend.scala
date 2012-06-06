@@ -38,7 +38,6 @@ object Depend {
       "agent" -> List("api"),
       "api" -> List("util"),
       "compiler" -> List("prim"),
-      "generator" -> List("prim"),
       "headless" -> List("shape","workspace"),
       "job" -> List("nvm"),
       "lab" -> List("nvm"),
@@ -88,9 +87,6 @@ check [util+] independentOf [Sun-AWT]
 check [headless+] independentOf [Sun-Swing] [bad-AWT]
 
 ### checks on external libraries
-
-[ASM-free-zone] = org.nlogo.* excluding [generator]
-check [ASM-free-zone] independentOf org.objectweb.*
 
 check org.nlogo.* independentOf com.wolfram.*
 

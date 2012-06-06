@@ -20,18 +20,12 @@ mkdir -p tmp/nightly
 bin/sbt fast:test 2>&1 | tee tmp/nightly/0-fast-test.txt
 if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: test-fast"; exit 1; fi
 echo "*** done: fast:test"
-bin/sbt nogen fast:test 2>&1 | tee tmp/nightly/1-nogen-fast-test.txt
-if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: nogen fast:test"; exit 1; fi
-echo "*** done: nogen fast:test"
 
-bin/sbt slow:test 2>&1 | tee tmp/nightly/2-slow-test.txt
+bin/sbt slow:test 2>&1 | tee tmp/nightly/1-slow-test.txt
 if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: slow:test"; exit 1; fi
 echo "*** done: slow:test"
-bin/sbt nogen slow:test 2>&1 | tee tmp/nightly/3-nogen-slow-test.txt
-if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: nogen slow:test"; exit 1; fi
-echo "*** done: nogen slow:test"
 
-bin/sbt depend 2>&1 | tee tmp/nightly/4-depend.txt
+bin/sbt depend 2>&1 | tee tmp/nightly/2-depend.txt
 if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: depend"; exit 1; fi
 echo "*** done: depend"
 

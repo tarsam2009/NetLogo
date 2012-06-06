@@ -60,14 +60,7 @@ case class LanguageTest(suiteName: String, testName: String, commands: List[Stri
 
   // on the core branch the _3D tests are gone, but extensions tests still have them since we
   // didn't branch the extensions, so we still need to filter those out - ST 1/13/12
-  val shouldRun = !testName.endsWith("_3D") && {
-    import org.nlogo.api.Version.useGenerator
-    if (testName.startsWith("Generator"))
-      useGenerator
-    else if (testName.startsWith("NoGenerator"))
-      !useGenerator
-    else true
-  }
+  val shouldRun = !testName.endsWith("_3D") && !testName.startsWith("Generator")
 
   def fullName = suiteName + "::" + testName
 

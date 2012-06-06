@@ -9,7 +9,6 @@
 git config submodule.models.url git@git.assembla.com:models.git
 git config submodule.extensions/array.url git@github.com:/NetLogo/Array-Extension.git
 git config submodule.extensions/matrix.url git@github.com:/NetLogo/Matrix-Extension.git
-git config submodule.extensions/profiler.url git@github.com:/NetLogo/Profiler-Extension.git
 git config submodule.extensions/sample.url git@github.com:/NetLogo/Sample-Extension.git
 git config submodule.extensions/sample-scala.url git@github.com:/NetLogo/Sample-Scala-Extension.git
 git config submodule.extensions/sound.url git@github.com:/NetLogo/Sound-Extension.git
@@ -26,7 +25,6 @@ git config submodule.extensions/table.url git@github.com:/NetLogo/Table-Extensio
 ( cd extensions/gogo; git remote set-url origin git@github.com:/NetLogo/GoGo-Extension.git )
 ( cd extensions/matrix; git remote set-url origin git@github.com:/NetLogo/Matrix-Extension.git )
 ( cd extensions/network; git remote set-url origin git@github.com:/NetLogo/Network-Extension.git )
-( cd extensions/profiler; git remote set-url origin git@github.com:/NetLogo/Profiler-Extension.git )
 ( cd extensions/qtj; git remote set-url origin git@github.com:/NetLogo/QTJ-Extension.git )
 ( cd extensions/sample; git remote set-url origin git@github.com:/NetLogo/Sample-Extension.git )
 ( cd extensions/sample-scala; git remote set-url origin git@github.com:/NetLogo/Sample-Scala-Extension.git )

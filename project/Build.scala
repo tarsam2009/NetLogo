@@ -10,6 +10,4 @@ object NetLogoBuild extends Build {
                 Testing.settings ++
                 Packaging.settings: _*)
 
-  lazy val nogen = TaskKey[Unit]("nogen", "disable bytecode generator")
-
 }

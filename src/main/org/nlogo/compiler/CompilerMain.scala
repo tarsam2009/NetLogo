@@ -50,13 +50,6 @@ private object CompilerMain {
     for(procdef <- defs) {
       procdef.accept(new ArgumentStuffer) // fill args arrays in Commands & Reporters
       new Assembler().assemble(procdef)     // flatten tree to command array
-      if(Version.useGenerator) // generate byte code
-        procdef.procedure.code =
-          Femto.get(classOf[GeneratorInterface], "org.nlogo.generator.Generator",
-                    Array(source, procdef.procedure,
-                          Boolean.box(
-                            extensionManager.profilingEnabled)))
-            .generate()
     }
     // only return top level procedures.
     // task procedures can be reached via the children field on Procedure.

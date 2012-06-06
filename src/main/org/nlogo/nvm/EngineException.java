@@ -28,11 +28,7 @@ public strictfp class EngineException
   // information to figure out what token the error happened on.
   public EngineException(Context context, String message) {
     super(message, null);
-    if (!org.nlogo.api.Version.useGenerator()) {
-      throw new IllegalStateException();
-    }
-    this.context = context;
-    instruction = null;
+    throw new IllegalStateException();
   }
 
   // previously this method was flattening all LogoExceptions into EngineExceptions

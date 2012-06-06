@@ -36,8 +36,6 @@ Extensions.extensionsTask
 
 Depend.dependTask
 
-nogen  := { System.setProperty("org.nlogo.noGenerator", "true") }
-
 libraryDependencies ++= Seq(
   "asm" % "asm-all" % "3.3.1",
   "org.picocontainer" % "picocontainer" % "2.13.6",
