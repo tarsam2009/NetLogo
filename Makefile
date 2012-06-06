@@ -45,7 +45,7 @@ tmp:
 
 ### sbt
 sbt $(SCALA_JAR) $(JARS):
-	bin/sbt extensions
+	bin/sbt package
 
 ### targets for running
 goshell:

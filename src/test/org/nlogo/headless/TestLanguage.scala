@@ -22,13 +22,6 @@ trait TestFinder extends Iterable[File]
 case class TxtsInDir(dir:String) extends TestFinder {
   override def iterator = new File(dir).listFiles.filter(_.getName.endsWith(".txt")).iterator
 }
-case object ExtensionTestsDotTxt extends TestFinder {
-  def iterator = {
-    def filesInDir(parent:File): Iterable[File] =
-      parent.listFiles.flatMap{f => if(f.isDirectory) filesInDir(f) else List(f)}
-    filesInDir(new File("extensions")).filter(_.getName == "tests.txt").iterator
-  }
-}
 
 class TestCommands extends TestLanguage(TxtsInDir("test/commands"))
 class TestReporters extends TestLanguage(TxtsInDir("test/reporters"))
@@ -37,7 +30,6 @@ class TestModels extends TestLanguage(
     .filterNot(_.getName.startsWith("HubNet"))
     .filterNot(_.getName.startsWith("SDM"))
     .filterNot(_.getName.startsWith("Artificial-Neural-Net")))
-class TestExtensions extends TestLanguage(ExtensionTestsDotTxt)
 
 // The output of the parser is lists of instances of these classes:
 
