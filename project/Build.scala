@@ -7,5 +7,6 @@ object NetLogoBuild extends Build {
       .configs(Testing.configs: _*)
       .settings(Defaults.defaultSettings ++
                 Testing.settings ++
-                Packaging.settings: _*)
+                Packaging.settings ++
+                ChecksumsAndPreviews.settings: _*)
 }

@@ -11,10 +11,11 @@ object Packaging {
             .map(f => "lib/" + f.getName)
             .filter(_.endsWith(".jar"))
             .mkString(" ")))},
-    packageBin in Compile ~= { jar =>
-      IO.copyFile(jar, file(".") / "NetLogo.jar")
-      jar
-    },
+    packageBin in Compile <<=
+      (packageBin in Compile, baseDirectory) map {
+        (jar, base) =>
+          IO.copyFile(jar, base / "NetLogo.jar")
+          jar },
     artifactName := { (_, _, _) => "NetLogo.jar" }
   )
 
