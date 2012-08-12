@@ -17,6 +17,7 @@ object NetLogoBuild extends Build {
     Project(id = "headless",
             base = file("headless"))
       .configs(Testing.configs: _*)
-      .settings(Testing.settings: _*)
+      .settings(Testing.settings ++
+                Depend.settings: _*)
 
 }

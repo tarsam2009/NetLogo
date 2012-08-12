@@ -60,7 +60,7 @@ sourceGenerators in Compile <+= Autogen.lexersGeneratorTask
 
 resourceGenerators in Compile <+= I18n.resourceGeneratorTask
 
-Depend.dependTask
+aggregate in runMain := false
 
 libraryDependencies ++= Seq(
   "asm" % "asm-all" % "3.3.1",
