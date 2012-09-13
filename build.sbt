@@ -55,19 +55,3 @@ unmanagedResourceDirectories in Compile <+= baseDirectory { _ / "resources" }
 unmanagedResourceDirectories in Compile <+= baseDirectory { _ / "headless" / "resources" }
 
 mainClass in Compile := Some("org.nlogo.headless.Main")
-
-sourceGenerators in Compile <+= Autogen.lexersGeneratorTask
-
-resourceGenerators in Compile <+= I18n.resourceGeneratorTask
-
-aggregate in runMain := false
-
-libraryDependencies ++= Seq(
-  "asm" % "asm-all" % "3.3.1",
-  "org.picocontainer" % "picocontainer" % "2.13.6",
-  "org.jmock" % "jmock" % "2.5.1" % "test",
-  "org.jmock" % "jmock-legacy" % "2.5.1" % "test",
-  "org.jmock" % "jmock-junit4" % "2.5.1" % "test",
-  "org.scalacheck" %% "scalacheck" % "1.10.0" % "test",
-  "org.scalatest" %% "scalatest" % "1.8" % "test"
-)
