@@ -62,10 +62,6 @@ aggregate in runMain := false
 /// settings from project/*.scala
 ///
 
-seq(Testing.settings: _*)
-
 seq(Packaging.settings: _*)
-
-seq(Depend.settings: _*)
 
 seq(ChecksumsAndPreviews.settings: _*)
