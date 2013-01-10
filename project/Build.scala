@@ -6,10 +6,6 @@ object NetLogoBuild extends Build {
   lazy val root =
     Project(id = "NetLogo", base = file("."))
       .configs(Testing.configs: _*)
-      .settings(Defaults.defaultSettings ++
-                Testing.settings ++
-                Packaging.settings ++
-                ChecksumsAndPreviews.settings: _*)
       .aggregate(headless)
       .dependsOn(headless % "test->test;compile->compile")
 
@@ -17,7 +13,5 @@ object NetLogoBuild extends Build {
     Project(id = "headless",
             base = file("headless"))
       .configs(Testing.configs: _*)
-      .settings(Testing.settings ++
-                Depend.settings: _*)
 
 }

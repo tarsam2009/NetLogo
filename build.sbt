@@ -2,10 +2,10 @@
 /// ThisBuild -- applies to subprojects too
 ///
 
-scalaVersion in ThisBuild := "2.9.2"
+scalaVersion in ThisBuild := "2.10.0"
 
 scalacOptions in ThisBuild ++=
-  "-deprecation -unchecked -Xfatal-warnings -Xcheckinit -encoding us-ascii"
+  "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -target:jvm-1.6 -optimize -Xfatal-warnings -Ywarn-adapted-args -Yinline-warnings"
   .split(" ").toSeq
 
 javacOptions in ThisBuild ++=
@@ -25,7 +25,7 @@ libraryDependencies in ThisBuild ++= Seq(
   "org.jmock" % "jmock-legacy" % "2.5.1" % "test",
   "org.jmock" % "jmock-junit4" % "2.5.1" % "test",
   "org.scalacheck" %% "scalacheck" % "1.10.0" % "test",
-  "org.scalatest" %% "scalatest" % "1.8" % "test"
+  "org.scalatest" %% "scalatest" % "2.0.M5b" % "test"
 )
 
 ///
@@ -57,3 +57,15 @@ unmanagedResourceDirectories in Compile <+= baseDirectory { _ / "headless" / "re
 mainClass in Compile := Some("org.nlogo.headless.Main")
 
 aggregate in runMain := false
+
+///
+/// settings from project/*.scala
+///
+
+seq(Testing.settings: _*)
+
+seq(Packaging.settings: _*)
+
+seq(Depend.settings: _*)
+
+seq(ChecksumsAndPreviews.settings: _*)
