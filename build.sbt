@@ -63,5 +63,3 @@ aggregate in runMain := false
 ///
 
 seq(Packaging.settings: _*)
-
-seq(ChecksumsAndPreviews.settings: _*)
