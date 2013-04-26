@@ -5,11 +5,11 @@
 scalaVersion in ThisBuild := "2.10.1"
 
 scalacOptions in ThisBuild ++=
-  "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -target:jvm-1.6 -optimize -Xfatal-warnings -Ywarn-adapted-args -Yinline-warnings"
+  "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -target:jvm-1.7 -optimize -Xlint -Xfatal-warnings"
   .split(" ").toSeq
 
 javacOptions in ThisBuild ++=
-  "-g -deprecation -encoding us-ascii -Werror -Xlint:all -Xlint:-serial -Xlint:-fallthrough -Xlint:-path -source 1.6 -target 1.6"
+  "-g -deprecation -encoding us-ascii -Werror -Xlint:all -Xlint:-serial -Xlint:-fallthrough -Xlint:-path -source 1.7 -target 1.7"
   .split(" ").toSeq
 
 // only log problems plz
@@ -20,7 +20,6 @@ crossPaths in ThisBuild := false
 
 libraryDependencies in ThisBuild ++= Seq(
   "asm" % "asm-all" % "3.3.1",
-  "org.picocontainer" % "picocontainer" % "2.13.6",
   "org.jmock" % "jmock" % "2.5.1" % "test",
   "org.jmock" % "jmock-legacy" % "2.5.1" % "test",
   "org.jmock" % "jmock-junit4" % "2.5.1" % "test",
@@ -28,13 +27,9 @@ libraryDependencies in ThisBuild ++= Seq(
   "org.scalatest" %% "scalatest" % "2.0.M5b" % "test"
 )
 
-///
-/// top-level project only
-///
-
 name := "NetLogo"
 
-artifactName := { (_, _, _) => "NetLogo.jar" }
+artifactName := { (_, _, _) => "NetLogoHeadless.jar" }
 
 onLoadMessage := ""
 
@@ -48,16 +43,16 @@ javaSource in Compile <<= baseDirectory(_ / "src" / "main")
 
 javaSource in Test <<= baseDirectory(_ / "src" / "test")
 
-unmanagedSourceDirectories in Test <+= baseDirectory(_ / "src" / "tools")
-
 unmanagedResourceDirectories in Compile <+= baseDirectory { _ / "resources" }
 
-unmanagedResourceDirectories in Compile <+= baseDirectory { _ / "headless" / "resources" }
+sourceGenerators in Compile <+= JFlexRunner.task
+
+resourceGenerators in Compile <+= I18n.resourceGeneratorTask
 
 mainClass in Compile := Some("org.nlogo.headless.Main")
 
-///
-/// settings from project/*.scala
-///
+seq(Testing.settings: _*)
 
-seq(Packaging.settings: _*)
+seq(Depend.settings: _*)
+
+seq(ChecksumsAndPreviews.settings: _*)
