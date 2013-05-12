@@ -100,8 +100,8 @@ object Delta {
 }
 
 case class Delta(
-  val rawMirroredUpdate: Array[Byte],
-  val actions: IndexedSeq[Action]) {
+  rawMirroredUpdate: Array[Byte],
+  actions: IndexedSeq[Action]) {
   def mirroredUpdate: Update = Serializer.fromBytes(rawMirroredUpdate)
   def size = rawMirroredUpdate.size + actions.size // used in FrameCache cost calculations
 }
@@ -149,6 +149,6 @@ case class Frame private (
   def ticks: Option[Double] =
     for {
       entry <- mirroredState.get(AgentKey(Mirrorables.World, 0))
-      ticks <- entry.lift(Mirrorables.MirrorableWorld.wvTicks)
+      ticks <- entry.lift(Mirrorables.MirrorableWorld.WorldVar.Ticks.id)
     } yield ticks.asInstanceOf[Double]
 }

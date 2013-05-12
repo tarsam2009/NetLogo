@@ -7,12 +7,12 @@ import org.nlogo.agent.{Agent, AgentSet, Observer, Turtle, Patch, Link}
 import org.nlogo.api.{AgentKind, CompilerException, JobOwner, LogoException, ReporterLogoThunk, CommandLogoThunk}
 import org.nlogo.nvm.{ExclusiveJob, Activation, Context, Procedure, Reporter}
 
-class Evaluator(workspace: AbstractWorkspaceScala) {
+class Evaluator(workspace: AbstractWorkspace) {
 
   def evaluateCommands(owner: JobOwner,
                        source: String,
                        agentSet: AgentSet = workspace.world.observers,
-                       waitForCompletion: Boolean = true) = {
+                       waitForCompletion: Boolean = true) {
     val procedure = invokeCompiler(source, None, true, agentSet.kind)
     workspace.jobManager.addJob(
       workspace.jobManager.makeConcurrentJob(owner, agentSet, procedure),
