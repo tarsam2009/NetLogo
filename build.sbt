@@ -2,10 +2,10 @@
 /// ThisBuild -- applies to subprojects too
 ///
 
-scalaVersion in ThisBuild := "2.10.1"
+scalaVersion in ThisBuild := "2.10.2"
 
 scalacOptions in ThisBuild ++=
-  "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -target:jvm-1.7 -optimize -Xlint -Xfatal-warnings"
+  "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -target:jvm-1.7 -Xlint -Xfatal-warnings"
   .split(" ").toSeq
 
 javacOptions in ThisBuild ++=
@@ -57,3 +57,5 @@ seq(Depend.settings: _*)
 seq(Classycle.settings: _*)
 
 seq(ChecksumsAndPreviews.settings: _*)
+
+org.scalastyle.sbt.ScalastylePlugin.Settings

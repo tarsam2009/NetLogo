@@ -14,7 +14,7 @@ import
   plot.{ PlotExporter, PlotManager },
   org.nlogo.util.{ Exceptions, Femto },
   java.io.{ IOException, PrintWriter },
-  java.util.WeakHashMap
+  collection.mutable.WeakHashMap
 
 import AbstractWorkspaceTraits._
 
@@ -43,8 +43,7 @@ object AbstractWorkspace {
 }
 
 abstract class AbstractWorkspace(val world: World)
-extends AbstractWorkspaceJ
-with api.LogoThunkFactory with api.ParserServices
+extends api.LogoThunkFactory with api.ParserServices
 with Workspace with Procedures with Plotting with Exporting with Evaluating with Benchmarking
 with Compiling with Profiling with Extensions with BehaviorSpace with Paths with Checksums
 with RunCache with Jobs with Warning with OutputArea with Importing {
@@ -61,7 +60,7 @@ with RunCache with Jobs with Warning with OutputArea with Importing {
   val lastRunTimes = new WeakHashMap[Job, WeakHashMap[Agent, WeakHashMap[Command, MutableLong]]]
 
   // for _thunkdidfinish (says that a thunk finished running without having stop called)
-  val completedActivations = new WeakHashMap[Activation, java.lang.Boolean]
+  val completedActivations = new WeakHashMap[Activation, Boolean]
 
   // the original instruction here is _tick or a ScalaInstruction (currently still experimental)
   // it is only ever used if we need to generate an EngineException
@@ -434,27 +433,6 @@ object AbstractWorkspaceTraits {
           fileManager.setPrefix(_modelDir)
       }
     }
-
-    /**
-     * attaches the current model directory to a relative path, if necessary.
-     * If filePath is an absolute path, this method simply returns it.
-     * If it's a relative path, then the current model directory is prepended
-     * to it. If this is a new model, the user's platform-dependent home
-     * directory is prepended instead.
-     */
-    @throws(classOf[java.net.MalformedURLException])
-    def attachModelDir(filePath: String): String =
-      if (new java.io.File(filePath).isAbsolute)
-        filePath
-      else {
-        val path = Option(getModelPath).getOrElse(
-          System.getProperty("user.home") +
-            java.io.File.separatorChar + "dummy.txt")
-        val urlForm = new java.net.URL(
-          AbstractWorkspaceJ.toURL(new java.io.File(path)),
-          filePath)
-        new java.io.File(urlForm.getFile).getAbsolutePath
-      }
 
   }
 

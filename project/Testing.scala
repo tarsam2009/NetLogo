@@ -9,10 +9,10 @@ object Testing {
 
   val configs = Seq(FastTest, MediumTest, SlowTest)
 
-  lazy val tr = InputKey[Unit]("tr", "org.nlogo.headless.TestReporters", test)
-  lazy val tc = InputKey[Unit]("tc", "org.nlogo.headless.TestCommands", test)
-  lazy val tm = InputKey[Unit]("tm", "org.nlogo.headless.TestModels", test)
-  lazy val testChecksums = InputKey[Unit]("test-checksums", "org.nlogo.headless.TestChecksums", test)
+  lazy val tr = InputKey[Unit]("tr", "org.nlogo.headless.lang.TestReporters", test)
+  lazy val tc = InputKey[Unit]("tc", "org.nlogo.headless.lang.TestCommands", test)
+  lazy val tm = InputKey[Unit]("tm", "org.nlogo.headless.lang.TestModels", test)
+  lazy val testChecksums = InputKey[Unit]("test-checksums", "org.nlogo.headless.misc.TestChecksums", test)
 
   private val testKeys = Seq(tr, tc, tm, testChecksums)
 
@@ -41,8 +41,8 @@ object Testing {
   private def fastFilter(path: Classpath, name: String): Boolean = !slowFilter(path, name)
   private def mediumFilter(path: Classpath, name: String): Boolean =
     fastFilter(path, name) ||
-    name == "org.nlogo.headless.TestReporters" ||
-    name == "org.nlogo.headless.TestCommands"
+    name == "org.nlogo.headless.lang.TestReporters" ||
+    name == "org.nlogo.headless.lang.TestCommands"
   private def slowFilter(path: Classpath, name: String): Boolean = {
     val jars = path.files.map(_.asURL).toArray[java.net.URL]
     val loader = new java.net.URLClassLoader(jars, getClass.getClassLoader)

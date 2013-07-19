@@ -4,8 +4,9 @@ package org.nlogo.parse
 
 import org.scalatest.FunSuite
 
-import org.nlogo.api, api.CompilerException
-import org.nlogo.util.Femto
+import org.nlogo.{ api, parse0 },
+  api.CompilerException,
+  org.nlogo.util.Femto
 
 class StructureParserTests extends FunSuite {
 
@@ -13,7 +14,7 @@ class StructureParserTests extends FunSuite {
     Femto.scalaSingleton("org.nlogo.lex.Tokenizer")
 
   def compile(source: String): StructureResults =
-    new StructureParser(tokenizer.tokenize(source),
+    new StructureParser(tokenizer.tokenize(source).map(parse0.Namer0),
                         None, StructureResults.empty)
       .parse(false)
 
@@ -112,6 +113,22 @@ class StructureParserTests extends FunSuite {
     expectResult("foo.nls")(results.includes.head.value)
   }
 
+  /// allow breeds to share variables
+
+  test("breeds may share variables") {
+    val results = compile("undirected-link-breed [edges edge]\n" +
+      "breed [nodes node]\n" +
+      "breed [foos foo]\n" +
+      "edges-own [lweight]\n" +
+      "nodes-own [weight]\n" +
+      "foos-own [weight]")
+    val dump = results.program.dump
+    assert(dump.containsSlice(
+      "breeds NODES = Breed(NODES, NODE, WEIGHT, false)\n" +
+      "FOOS = Breed(FOOS, FOO, WEIGHT, false)\n" +
+      "link-breeds EDGES = Breed(EDGES, EDGE, LWEIGHT, false)"), dump)
+  }
+
   test("declarations1") {
     val results = compile("extensions [foo] globals [g1 g2] turtles-own [t1 t2] patches-own [p1 p2]")
     assert(results.procedures.isEmpty)
@@ -159,6 +176,13 @@ class StructureParserTests extends FunSuite {
     expectResult("closing bracket expected")(e.getMessage.takeWhile(_ != ','))
   }
 
+  test("missing close bracket in globals") {
+    val e = intercept[CompilerException] {
+      compile("globals [g turtles-own [t]")
+    }
+    expectResult("closing bracket expected")(e.getMessage.takeWhile(_ != ','))
+  }
+
   test("attempt primitive as variable") {
     val e = intercept[CompilerException] {
       compile("globals [turtle]")
@@ -180,11 +204,32 @@ class StructureParserTests extends FunSuite {
     expectResult("Redeclaration of TURTLES-OWN")(e.getMessage.takeWhile(_ != ','))
   }
 
+  test("redeclaration of breed-own") {
+    val ex = intercept[CompilerException] {
+      compile("breed [hunters hunter] hunters-own [fear] hunters-own [loathing]")
+    }
+    expectResult("Redeclaration of HUNTERS-OWN")(ex.getMessage.takeWhile(_ != ','))
+  }
+
   test("redeclaration of extensions") {
     val e = intercept[CompilerException] {
       compile("extensions [foo] extensions [bar]")
     }
     expectResult("Redeclaration of EXTENSIONS")(e.getMessage.takeWhile(_ != ','))
   }
+
+  // https://github.com/NetLogo/NetLogo/issues/348
+  def testTaskVariableMisuse(source: String) {
+    val e = intercept[CompilerException] { compile(source) }
+    val message =
+      "Names beginning with ? are reserved for use as task inputs"
+    expectResult(message)(e.getMessage)
+  }
+  test("task variable as procedure name") {
+    testTaskVariableMisuse("to ?z end") }
+  test("task variable as procedure input") {
+    testTaskVariableMisuse("to x [?y] end") }
+  test("task variable as agent variable") {
+    testTaskVariableMisuse("turtles-own [?a]") }
 
 }
