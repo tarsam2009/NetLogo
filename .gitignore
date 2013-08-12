@@ -9,7 +9,6 @@ tmp/
 
 # wildcards
 *.tmp
-*_managed/
 *~
 .#*
 \#*
@@ -33,8 +32,6 @@ tmp/
 /out/
 /docs/
 /resources/system/dict.txt
-/src/main/org/nlogo/agent/ImportLexer.java
-/src/main/org/nlogo/lex/TokenLexer.java
 /resources/Errors_??.properties
 
 # ignore nw extension until bundled
