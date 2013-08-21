@@ -18,12 +18,16 @@ ivyLoggingLevel in ThisBuild := UpdateLogging.Quiet
 // we're not cross-building for different Scala versions
 crossPaths in ThisBuild := false
 
+// temporarily needed for ScalaTest build which hasn't propagated
+// to Maven Central yet - ST 8/14/13
+resolvers += Resolver.sonatypeRepo("releases")
+
 libraryDependencies in ThisBuild ++= Seq(
   "org.jmock" % "jmock" % "2.5.1" % "test",
   "org.jmock" % "jmock-legacy" % "2.5.1" % "test",
   "org.jmock" % "jmock-junit4" % "2.5.1" % "test",
   "org.scalacheck" %% "scalacheck" % "1.10.1" % "test",
-  "org.scalatest" %% "scalatest" % "2.0.M6-SNAP35" % "test"
+  "org.scalatest" %% "scalatest" % "2.0.RC1-SNAP4" % "test"
 )
 
 artifactName := { (_, _, _) => "NetLogoHeadless.jar" }
@@ -55,5 +59,7 @@ seq(Depend.settings: _*)
 seq(Classycle.settings: _*)
 
 seq(ChecksumsAndPreviews.settings: _*)
+
+seq(Scaladoc.settings: _*)
 
 org.scalastyle.sbt.ScalastylePlugin.Settings

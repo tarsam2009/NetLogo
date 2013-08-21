@@ -1,7 +1,7 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/NetLogo
 
 package org.nlogo.headless
-package model
+package lang
 
 /**
 Important Note:
@@ -23,9 +23,11 @@ its ok that these tests don't run in 'run' mode because we are only testing
 the stack traces, not the results.
  */
 
-import org.nlogo.api, api.LogoException, api.ModelCreator._
+import org.nlogo.api, api.LogoException
+import org.scalatest.FunSuite
+import ModelCreator._
 
-class TestStackTraces extends AbstractTestModels {
+class TestStackTraces extends FixtureSuite {
 
   // these tests just call the primitive directly from the observer
   // the call should fail, and then we analyze the stack trace.
@@ -81,14 +83,16 @@ class TestStackTraces extends AbstractTestModels {
       Plot(name = "p", pens = Pens(Pen(name = "pp", updateCode = code)))
   }
 
-  def trace = workspace.lastErrorReport.stackTrace.get.trim
+  def trace(implicit fixture: Fixture) =
+    fixture.workspace.lastErrorReport.stackTrace.get.trim
 
   def callPrimDirectly_Test(prim: String, codeType: CodeType) {
-    testModel("direct call to " + prim + " with failure in " + codeType,
-      Model("globals [x]", widgets = List(codeType.plot("if x = 1 [plot __boom]")))) {
-      observer >> "reset-ticks"
-      observer >> "set x 1"
-      intercept[LogoException] {observer >> prim}
+    test("direct call to " + prim + " with failure in " + codeType) { implicit fixture =>
+      import fixture._
+      open(Model("globals [x]", widgets = List(codeType.plot("if x = 1 [plot __boom]"))))
+      testCommand("reset-ticks")
+      testCommand("set x 1")
+      intercept[LogoException] { testCommand(prim) }
       assert(trace === """boom!
 error while observer running __BOOM
   called by """ + codeType.procName + """
@@ -107,10 +111,12 @@ error while observer running __BOOM
   to do-it if x = 1 [explode] end
   to explode print 1 / zero end
 """
-    testModel("nesting " + prim + " in " + codeType, Model(code, widgets = List(codeType.plot("do-it")))) {
-      observer >> "reset-ticks"
-      observer >> "set x 1"
-      intercept[LogoException] {observer >> "go1"}
+    test("nesting " + prim + " in " + codeType) { implicit fixture =>
+      import fixture._
+      open(Model(code, widgets = List(codeType.plot("do-it"))))
+      testCommand("reset-ticks")
+      testCommand("set x 1")
+      intercept[LogoException] {testCommand("go1")}
       assert(trace === """Division by zero.
 error while observer running /
   called by procedure EXPLODE
@@ -130,8 +136,10 @@ error while observer running /
     "to-report foo report bar end " +
     "to-report bar report __boom end"
 
-  testModel("error inside run", Model(code)) {
-    intercept[LogoException] {observer >> "__ignore runresult \"foo\""}
+  test("error inside run") { implicit fixture =>
+    import fixture._
+    open(Model(code))
+    intercept[LogoException] {testCommand("__ignore runresult \"foo\"")}
     assert(trace === """boom!
 error while observer running __BOOM
   called by procedure BAR
@@ -141,8 +149,10 @@ error while observer running __BOOM
   }
 
   // ticket #1170
-  testModel("error inside runresult", Model(code)) {
-    intercept[LogoException] {observer >> "run \"__ignore foo\""}
+  test("error inside runresult") { implicit fixture =>
+    import fixture._
+    open(Model(code))
+    intercept[LogoException] {testCommand("run \"__ignore foo\"")}
     assert(trace === """boom!
 error while observer running __BOOM
   called by procedure BAR
