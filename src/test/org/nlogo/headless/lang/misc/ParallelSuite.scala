@@ -2,6 +2,7 @@
 
 package org.nlogo.headless
 package lang
+package misc
 
 import org.scalatest.FunSuite
 
@@ -11,7 +12,7 @@ import org.scalatest.FunSuite
  * simply call testModel, or testModelFile. This will automatically run
  * your test in parallel in 10 threads.
  */
-trait TestParallelModels extends FunSuite {
+trait ParallelSuite extends FunSuite {
 
   /**
    * Run the threads, and throw any errors after all threads are completed.
