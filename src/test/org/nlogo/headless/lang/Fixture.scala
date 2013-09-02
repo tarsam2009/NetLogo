@@ -25,7 +25,33 @@ object Fixture {
   }
 }
 
-class Fixture(name: String) {
+// implemented below via HeadlessWorkspace, but also to be implemented
+// elsewhere by Tortoise - ST 8/28/13
+trait AbstractFixture {
+  import Assertions._
+  def defaultDimensions: api.WorldDimensions
+  def declare(source: String, dimensions: api.WorldDimensions = defaultDimensions)
+  def open(path: String)
+  def open(model: ModelCreator.Model)
+  def runCommand(command: Command, mode: TestMode)
+  def runReporter(reporter: Reporter, mode: TestMode)
+  def readFromString(literal: String): AnyRef
+  def checkResult(mode: TestMode, reporter: String, expectedResult: String, actualResult: AnyRef) {
+    // To be as safe as we can, let's do two separate checks here...  we'll compare the results both
+    // as values and as printed representations.  Most of the time these checks will come out
+    // the same, but it might be good to have both, partially as a way of giving both Equality and
+    // Dump lots of testing! - ST 5/8/03, 8/21/13
+    withClue(s"""$mode: not equals(): reporter "$reporter"""") {
+      assertResult(expectedResult)(
+        api.Dump.logoObject(actualResult, true, false))
+    }
+    assert(api.Equality.equals(actualResult,
+      readFromString(expectedResult)),
+      s"""$mode: not recursivelyEqual(): reporter "$reporter"""")
+  }
+}
+
+class Fixture(name: String) extends AbstractFixture {
 
   import Assertions._
 
@@ -34,9 +60,7 @@ class Fixture(name: String) {
 
   val workspace = HeadlessWorkspace.newInstance
   workspace.silent = true
-  workspace.initForTesting(
-    new api.WorldDimensions(-5, 5, -5, 5),
-    HeadlessWorkspace.TestDeclarations)
+
   // the default error handler just spits something to stdout or stderr or somewhere.
   // we want to fail hard. - ST 7/21/10
   workspace.importerErrorHandler =
@@ -52,20 +76,22 @@ class Fixture(name: String) {
   val compiler: CompilerInterface =
     Femto.scalaSingleton("org.nlogo.compile.Compiler")
 
-  def declare(source: String) {
-    val results =
-      compiler.compileProgram(source, api.Program.empty,
-        workspace.getExtensionManager)
-    workspace.procedures = results.proceduresMap
-    workspace.world.program(results.program)
-    workspace.init()
-    workspace.world.realloc()
+  def defaultDimensions = api.WorldDimensions.square(5)
+
+  def declare(source: String, dimensions: api.WorldDimensions = defaultDimensions) {
+    ModelCreator.open(workspace,
+      dimensions = dimensions,
+      source = source)
   }
+
+  def readFromString(literal: String): AnyRef =
+    compiler.frontEnd.readFromString(literal)
 
   // tempted to DRY runReporter and runCommand together since they're so similar, but refraining
   // since there are many little differences, too - ST 8/15/13
 
   def runReporter(reporter: Reporter, mode: TestMode = NormalMode) {
+    require(workspace.modelOpened)
     try {
       workspace.clearLastLogoException()
       val wrappedReporter = mode match {
@@ -80,17 +106,7 @@ class Fixture(name: String) {
         throw workspace.lastLogoException
       reporter.result match {
         case Success(expectedResult) =>
-          // To be as safe as we can, let's do two separate checks here...  we'll compare the results both
-          // as Logo values, and as printed representations.  Most of the time these checks will come out
-          // the same, but it's good to have a both, partially as a way of giving both
-          // Utils.recursivelyEqual() and Dump.logoObject() lots of testing! - ST 5/8/03
-          withClue(s"""$mode: not equals(): reporter "${reporter.reporter}"""") {
-            assertResult(expectedResult)(
-              api.Dump.logoObject(actualResult, true, false))
-          }
-          assert(api.Equality.equals(actualResult,
-            compiler.readFromString(expectedResult)),
-            s"""$mode: not recursivelyEqual(): reporter "${reporter.reporter}"""")
+          checkResult(mode, reporter.reporter, expectedResult, actualResult)
         case _ =>
           fail(s"""failed to cause runtime error: "${reporter.reporter}"""")
       }
@@ -99,6 +115,7 @@ class Fixture(name: String) {
   }
 
   def runCommand(command: Command, mode: TestMode = NormalMode) {
+    require(workspace.modelOpened)
     try {
       workspace.clearLastLogoException()
       val wrappedCommand = mode match {
@@ -148,7 +165,9 @@ class Fixture(name: String) {
     runCommand(Command(command, api.AgentKind.Observer, result))
 
   // more convenience
+  def open(path: String) =
+    workspace.open(path)
   def open(model: ModelCreator.Model) =
-    workspace.openFromSource(model.toString)
+    workspace.openString(model.toString)
 
 }

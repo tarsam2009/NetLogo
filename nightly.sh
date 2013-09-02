@@ -24,7 +24,14 @@ echo "*** done: test:compile"
 if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: fast:test"; exit 1; fi
 echo "*** done: fast:test"
 
-./sbt slow:test 2>&1 | tee tmp/nightly/3-slow-test.txt
+# experimenting hoping that intermittent Travis failures will stop.
+# hopefully turning off logBuffered for the slow tests means that we
+# won't go 10 minutes without producing any output.  with logBuffered
+# off, the output from the different tests gets scrambled together,
+# but we can't turn off parallelExecution or the whole thing will
+# take more than 50 minutes to run (the Travis limit) - ST 8/29/13
+
+./sbt 'set logBuffered in test := false' slow:test 2>&1 | tee tmp/nightly/3-slow-test.txt
 if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: slow:test"; exit 1; fi
 echo "*** done: slow:test"
 
@@ -32,9 +39,8 @@ echo "*** done: slow:test"
 if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: depend"; exit 1; fi
 echo "*** done: depend"
 
-# commenting out until plugin is available for sbt 0.13 - ST 8/11/13
-#./sbt scalastyle 2>&1 | tee tmp/nightly/6-scalastyle.txt
-#if [ `wc -l < target/scalastyle-result.xml` -ne 2 ] ; then echo "*** FAILED: scalastyle"; exit 1; fi
-#echo "*** done: scalastyle"
+./sbt scalastyle 2>&1 | tee tmp/nightly/6-scalastyle.txt
+if [ `wc -l < target/scalastyle-result.xml` -ne 2 ] ; then echo "*** FAILED: scalastyle"; exit 1; fi
+echo "*** done: scalastyle"
 
 echo "****** all done!"
