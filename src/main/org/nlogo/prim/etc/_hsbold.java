@@ -9,7 +9,7 @@ import org.nlogo.api.Syntax;
 import org.nlogo.nvm.Context;
 import org.nlogo.nvm.Reporter;
 
-public final strictfp class _hsb
+public final strictfp class _hsbold
     extends Reporter {
   @Override
   public Syntax syntax() {
@@ -29,11 +29,11 @@ public final strictfp class _hsb
   public LogoList report_1(final Context context, double h, double s, double b) {
     int argb = java.awt.Color.HSBtoRGB
         ((float) (StrictMath.max
-            (0, StrictMath.min(360, h)) / 360.0),
+            (0, StrictMath.min(255, h)) / 255.0),
             (float) (StrictMath.max
-                (0, StrictMath.min(100, s)) / 100.0),
+                (0, StrictMath.min(255, s)) / 255.0),
             (float) (StrictMath.max
-                (0, StrictMath.min(100, b)) / 100.0));
+                (0, StrictMath.min(255, b)) / 255.0));
 
     LogoListBuilder rgbList = new LogoListBuilder();
     rgbList.add(Double.valueOf((argb >> 16) & 0xff));
